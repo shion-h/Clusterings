@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.5)
+set (CMAKE_CXX_STANDARD 11)
+INCLUDE_DIRECTORIES(/usr/include/python2.7)
+ADD_LIBRARY(clustering SHARED src/PAMClusterer.cpp)
+TARGET_LINK_LIBRARIES(clustering boost_python python2.7 )
