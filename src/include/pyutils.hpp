@@ -47,12 +47,19 @@ py::list convertVectorToList1D(std::vector<unsigned int> vector){//{{{
 
 double calculateJSD(const std::vector<double> vector1, const std::vector<double> vector2){//{{{
     double JSD = 0.0;
+    double factor1, factor2;
     for(int i=0; i<vector1.size(); i++){
-        JSD += 0.5 * (vector1[i]*log(vector1[i]/vector2[i]) + vector2[i]*log(vector2[i]/vector1[i]));
-    }
-    if(JSD == 0.0){
-        for(int i=0; i<vector1.size(); i++){
+        if(vector1[i] == 0.0){
+            factor1 = 0.0000000001;
+        }else{
+            factor1 = vector1[i];
         }
+        if(vector2[i] == 0.0){
+            factor2 = 0.0000000001;
+        }else{
+            factor2 = vector2[i];
+        }
+        JSD += 0.5 * (factor1*log(factor1/factor2) + factor2*log(factor2/factor1));
     }
     return JSD;
 }//}}}
@@ -66,9 +73,9 @@ double calculateEuclidDistance(std::vector<double> vector1, std::vector<double> 
     return euclidDistance;
 }//}}}
 
-std::vector<unsigned int> choiceRandomItems(const size_t size, int randMin, int randMax){//{{{
+std::vector<unsigned int> choiceRandomItems(const int size, int randMin, int randMax){//{{{
     if(randMin > randMax) std::swap(randMin, randMax);
-    const size_t maxMinDiff = static_cast<size_t>(randMax - randMin + 1);
+    const int maxMinDiff = randMax - randMin + 1;
     if(maxMinDiff < size) throw std::runtime_error("augument error");
 
     std::vector<unsigned int> tmp;
@@ -76,10 +83,19 @@ std::vector<unsigned int> choiceRandomItems(const size_t size, int randMin, int 
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<int> distribution(randMin, randMax);
 
-    const size_t makeSize = static_cast<size_t>(size*1.2);
+    const double makeSize = size*1.2;
 
+    std::cout<<"tmp size:"<<tmp.size()<<' '<<size<<std::endl;
     while(tmp.size() < size){
-        while(tmp.size() < makeSize) tmp.push_back(distribution(mt));
+        while(tmp.size() < makeSize){
+            tmp.push_back(distribution(mt));
+        // std::cout<<distribution(mt)<<std::endl;
+        }
+        std::cout<<"tmp";
+        for(int i=0; i<tmp.size(); i++){
+            std::cout<<tmp[i]<<' ';
+        }
+        std::cout<<std::endl;
         std::sort(tmp.begin(), tmp.end());
         auto uniqueEnd = std::unique(tmp.begin(), tmp.end());
 
@@ -88,7 +104,6 @@ std::vector<unsigned int> choiceRandomItems(const size_t size, int randMin, int 
         }
         tmp.erase(uniqueEnd, tmp.end());
     }
-
     std::shuffle(tmp.begin(), tmp.end(), mt);
     return tmp;
 }//}}}

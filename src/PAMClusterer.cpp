@@ -102,9 +102,15 @@ py::list PAMClusterer::fitToData(const py::list &data){//{{{
     this->initializeMedoids();
     int count = 0;
     while(1){
+        for(int i=0; i<medoidIndices_.size(); i++){
+            std::cout<<"medoidsIndices"<<medoidIndices_[i]<<' ';
+        }
         std::vector<unsigned int> previousMedoids = medoidIndices_;
         this->assignRecordsToClusters();
+        std::cout<<"assign"<<std::endl;
         this->decideMedoids();
+        std::cout<<"decide"<<std::endl;
+        std::cout<<std::endl;
         if(this->IsConvergence(previousMedoids))break;
         count++;
     }
